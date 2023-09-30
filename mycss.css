@@ -1,0 +1,63 @@
+ body {
+	    background-color: #fafafa;
+		}
+
+	.text-center {
+		   text-align: center;
+		}
+
+	.text-gray{
+		color: gray;
+		}
+
+	.text-gray-dark{
+		color: #424242;
+		}
+
+	.text-blue{
+		color: dodgerblue;
+		}
+
+	.innerDiv{
+		max-width: 800px;
+	    overflow: hidden;
+	    background-color: white;
+	    padding: 20px;
+	}
+
+ 	#issMap{
+ 		height: 515px;
+ 		z-index: 1; /* Defina um z-index menor para o mapa */
+	    position: relative; /* Certifique-se de que o mapa tenha uma posição definida para que o z-index funcione */
+
+ 		}
+  
+    /* Estilos para o modal */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 2;
+        left: 0;
+        top: 0;
+        width: 660px;
+        height: 100%;
+        overflow: auto;
+/*        background-color: rgba(0,0,0,0.4);*/
+    	}
+
+    .modal-content {
+        position: relative;
+        margin: 15% auto;
+        padding: 0;
+        width: 70%;
+    	}
+
+    .close {
+        position: absolute;
+        right: -90px;
+        top: 2px;
+        color: white;
+        font-size: 24px;
+        font-weight: bold;
+        cursor: pointer;
+    	}
