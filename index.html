@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang='pt-br'>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>ISS Location</title>
+
+    <!-- Leaflet's API's CSS -->
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+
+    <!-- Make sure you put this AFTER Leaflet's API's CSS -->
+ 	<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+
+     <style>
+     	body {
+    width: 500px;
+    height: 400px;
+    overflow: hidden;
+}
+
+     	#issMap{
+     		height: 280px;
+     		z-index: 1; /* Defina um z-index menor para o mapa */
+		    position: relative; /* Certifique-se de que o mapa tenha uma posição definida para que o z-index funcione */
+
+     	}
+  
+    /* Estilos para o modal */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 2;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0,0,0,0.4);
+    }
+
+    .modal-content {
+        position: relative;
+        margin: 15% auto;
+        padding: 0;
+        width: 70%;
+    }
+
+    .close {
+        position: absolute;
+        right: 10px;
+        top: 5px;
+        color: #aaa;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+</style>
+
+
+</head>
+<body>
+
+<h2>Onde a Estação Espacial Internacional (ISS) está neste exato momento?</h2>
+
+<!-- <h3>Localização atual: <span id="location"></span></h3> -->
+
+<h5>
+	Latitute: <span id='lat'></span><br>
+	Longitude: <span id='lon'></span>
+</h5>
+
+<h5 style="color: gray;">Para uma experiência imersiva, passe o mouse sobre o ícone da ISS e assista à live da NASA diretamente do espaço.</h5>
+
+<div id="issMap"></div>
+
+<!-- Modal para o vídeo do YouTube -->
+<div id="videoModal" class="modal">
+    <div class="modal-content">
+        <span class="close" >X</span>
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/K5JSRGhB-nM?si=hls0w0hEfrX2xuzW" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+    </div>
+</div>
+
+
+<script>
+	// Map & tiles
+	const mymap = L.map('issMap').setView([0, 0], 1);
+
+	const attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+
+	const tilurl = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+	const tiles = L.tileLayer(tilurl, {
+    	maxZoom: 19,
+    	attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+		}).addTo(mymap);
+
+	// MArker & Custom Icon
+	var issIcon = L.icon({
+	    iconUrl: 'iss200.png',
+	    iconSize: [50, 32],
+	    iconAnchor: [25, 16],
+		});
+
+	const marker = L.marker([0, 0], {icon: issIcon}).addTo(mymap);
+
+
+	const api_url = 'https://api.wheretheiss.at/v1/satellites/25544'
+
+	
+	async function getISS() {
+		const response = await fetch(api_url);
+		const data = await response.json();
+	
+		console.log(data)	
+
+		const { latitude, longitude } = data;
+
+		
+		marker.setLatLng([latitude, longitude], 2);
+			
+
+		document.getElementById('lat').textContent = latitude;
+		document.getElementById('lon').textContent = longitude;
+
+		async function getLocationName(latitude, longitude) {
+	    const endpoint = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`;
+    try {
+        const response = await fetch(endpoint);
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json();
+        return data.display_name;
+    } catch (error) {
+        console.error("There was a problem with the fetch operation:", error.message);
+        return "Localização desconhecida"; // Retorne um valor padrão em caso de erro
+    }
+		}
+
+
+		// Get the location name using the coordinates
+    	const locationName = await getLocationName(latitude, longitude);
+    	document.getElementById('location').textContent = locationName;
+
+	}
+
+	// Obter o modal
+	var modal = document.getElementById("videoModal");
+
+	// Obter o elemento <span> que fecha o modal
+	var span = document.getElementsByClassName("close")[0];
+
+	// Quando o usuário passa o mouse sobre o ícone, abra o modal
+	marker.on('mouseover', function() {
+	    modal.style.display = "block";
+	});
+
+	// Quando o usuário clica em <span> (x), feche o modal
+	span.onclick = function() {
+	    modal.style.display = "none";
+	}
+
+	// Quando o usuário clica fora do modal, feche-o
+	window.onclick = function(event) {
+	    if (event.target == modal) {
+	        modal.style.display = "none";
+	    }
+	}
+
+
+
+	getISS();
+</script>	
+
+</body>
+</html>

@@ -1,0 +1,11 @@
+{
+	"name": "Where is the ISS?",
+	"version": "1.0.0",
+	"description": "Shows the exact location of the ISS on a map, plus NASA's live streaming video from space.",
+	"manifest_version": 3,
+	"author": "Paulo Andrade",
+	"action": {
+		"default_popup": "index.html",
+		"default_title": "Where is the ISS?"
+	}
+}
